@@ -1,5 +1,4 @@
-﻿using System;
-using System.Transactions;
+﻿using System.Transactions;
 using MongoDB.Driver;
 using NetTransactionScope.Library.Entity;
 
@@ -21,9 +20,6 @@ namespace NetTransactionScope.Library.Mongodb
         {
             try
             {
-
-                EnsureTempCollectionExists();
-                BackupData();
                 _db.Books.InsertOne(_book);
 
                 //If work finished correctly, reply prepared
@@ -38,7 +34,6 @@ namespace NetTransactionScope.Library.Mongodb
 
         public void Commit(Enlistment enlistment)
         {
-            DeleteBackupItem();
             //Declare done on the enlistment
             enlistment.Done();
         }
@@ -50,30 +45,8 @@ namespace NetTransactionScope.Library.Mongodb
 
         public void Rollback(Enlistment enlistment)
         {
-            DeleteBackupItem();
             DeleteAddedItem();
             enlistment.Done();
-        }
-
-        private void EnsureTempCollectionExists()
-        {
-            _db.BooksTemp.CountDocuments(x => x.Id != Guid.Empty);
-        }
-
-        private void BackupData()
-        {
-            if (_db.BooksTemp.CountDocuments(x => x.Id == _book.Id) == 0)
-            {
-                _db.BooksTemp.InsertOne(_book);
-            }
-        }
-
-        private void DeleteBackupItem()
-        {
-            if (_db.BooksTemp.CountDocuments(x => x.Id == _book.Id) > 0)
-            {
-                _db.BooksTemp.DeleteOne(x => x.Id == _book.Id);
-            }
         }
 
         private void DeleteAddedItem()

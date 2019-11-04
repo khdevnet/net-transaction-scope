@@ -26,8 +26,6 @@ namespace NetTransactionScope.Library.Files
             try
             {
 
-                EnsureTempFolderExists();
-                BackupFile();
                 _fileStorage.CreateFile(CurrentPath, _fileData);
 
                 //If work finished correctly, reply prepared
@@ -41,9 +39,6 @@ namespace NetTransactionScope.Library.Files
 
         public override void Commit(Enlistment enlistment)
         {
-            //Do any work necessary when commit notification is received
-            DeleteBackupFile();
-            //Declare done on the enlistment
             enlistment.Done();
         }
 
@@ -52,7 +47,6 @@ namespace NetTransactionScope.Library.Files
             //Do any work necessary when rollback notification is received
 
             DeleteFile();
-            DeleteBackupFile();
 
             //Declare done on the enlistment
             enlistment.Done();
@@ -64,12 +58,6 @@ namespace NetTransactionScope.Library.Files
             //Declare done on the enlistment
             enlistment.Done();
         }
-
-        private void BackupFile()
-        {
-            File.WriteAllBytes(BackupPath, _fileData);
-        }
-
 
         private void DeleteFile()
         {

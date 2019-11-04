@@ -45,7 +45,7 @@ namespace NetTransactionScope.Library.Mongodb
 
         public void InDoubt(Enlistment enlistment)
         {
-            
+            enlistment.Done();
         }
 
         public void Rollback(Enlistment enlistment)

@@ -9,10 +9,12 @@ namespace NetTransactionScope.Tests
     {
         public MongoDbClassFixture()
         {
-            BooksNoSqlInitialzer.Init();
+            RunCommand("docker stop mongo-tests");
             RunCommand("docker rm mongo-tests");
             RunCommand("docker run --name mongo-tests -p 33381:27017 -d mongo:4");
-            Thread.Sleep(1000);
+            BooksNoSqlInitialzer.Init();
+
+            Thread.Sleep(2000);
         }
 
         public void Dispose()

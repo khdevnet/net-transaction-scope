@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NetTransactionScope.Library.PostgreSql.Migrations
 {
     [DbContext(typeof(BooksSqlDbContext))]
-    [Migration("20191104135916_Init")]
+    [Migration("20191104150732_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

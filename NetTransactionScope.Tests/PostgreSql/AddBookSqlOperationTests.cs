@@ -5,7 +5,7 @@ using Xunit;
 
 namespace NetTransactionScope.Tests.PostgreSql
 {
-    public class AddBookTests : IClassFixture<PostgreSqlDbClassFixture>
+    public class AddBookSqlOperationTests : IClassFixture<PostgreSqlDbClassFixture>
     {
         [Fact]
         public void AddBookAddedTest()
@@ -27,6 +27,11 @@ namespace NetTransactionScope.Tests.PostgreSql
                 Assert.Equal(bookId, addedBook.Id);
             }
 
+            CleanupAddedBook(bookId);
+        }
+
+        private static void CleanupAddedBook(Guid bookId)
+        {
             using (var db = new BooksSqlDbContext())
             {
                 var addedBook = db.Books.Find(bookId);

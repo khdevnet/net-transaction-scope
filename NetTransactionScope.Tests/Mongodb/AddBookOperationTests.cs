@@ -13,7 +13,7 @@ namespace NetTransactionScope.Tests.Mongodb
         public void AddBookOperationBookAdded()
         {
             var bookId = Guid.NewGuid();
-            var db = new BooksNoSqlDbContext("mongodb://localhost:33381", "tests-db");
+            var db = new BooksNoSqlDbContext();
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -38,7 +38,7 @@ namespace NetTransactionScope.Tests.Mongodb
         public void AddBookOperationBookNotAdded()
         {
             var bookId = Guid.NewGuid();
-            var db = new BooksNoSqlDbContext("mongodb://localhost:33381", "tests-db");
+            var db = new BooksNoSqlDbContext();
 
             using (TransactionScope scope = new TransactionScope())
             {

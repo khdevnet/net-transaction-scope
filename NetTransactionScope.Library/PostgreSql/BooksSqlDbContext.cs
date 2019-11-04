@@ -5,7 +5,7 @@ namespace NetTransactionScope.Library.PostgreSql
 {
     public class BooksSqlDbContext : DbContext
     {
-        public const string ConnectionStringTemplate = @"Host={0};Port={1};Database={2};Username={3};Password={4}";
+        public const string ConnectionStringTemplate = @"Host={0};Port={1};Database={2};Username={3};Password={4};";// Enlist=true
         public const string Password = "123456";
         public const string User = "postgres";
         public const string Port = "33382";

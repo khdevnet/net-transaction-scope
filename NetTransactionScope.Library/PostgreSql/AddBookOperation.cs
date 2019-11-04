@@ -1,11 +1,10 @@
-﻿using System;
-using System.Transactions;
+﻿using System.Transactions;
 using Microsoft.EntityFrameworkCore.Storage;
 using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.PostgreSql
 {
-    public class AddBookOperation : IEnlistmentNotification
+    public class AddBookOperation : TxOperation
     {
         private readonly IBooksSqlDbContext _db;
         private IDbContextTransaction _transaction;
@@ -15,40 +14,26 @@ namespace NetTransactionScope.Library.PostgreSql
         {
             _db = db;
             _book = book;
-            Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
         }
 
-        public void Prepare(PreparingEnlistment preparingEnlistment)
+        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            try
-            {
-                _transaction = _db.Database.BeginTransaction();
-                _db.Books.Add(_book);
-                _db.SaveChanges();
-                preparingEnlistment.Prepared();
-            }
-            catch (Exception e)
-            {
-                preparingEnlistment.ForceRollback();
-            }
+            _transaction = _db.Database.BeginTransaction();
+            _db.Books.Add(_book);
+            _db.SaveChanges();
         }
 
-        public void Commit(Enlistment enlistment)
+        public override void Commit(Enlistment enlistment)
         {
             _transaction.Commit();
             _transaction.Dispose();
             enlistment.Done();
         }
 
-        public void Rollback(Enlistment enlistment)
+        public override void Rollback(Enlistment enlistment)
         {
             _transaction.Rollback();
             _transaction.Dispose();
-            enlistment.Done();
-        }
-
-        public void InDoubt(Enlistment enlistment)
-        {
             enlistment.Done();
         }
     }

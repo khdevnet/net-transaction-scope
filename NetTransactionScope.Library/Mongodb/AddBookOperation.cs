@@ -4,7 +4,7 @@ using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.Mongodb
 {
-    public class AddBookOperation : IEnlistmentNotification
+    public class AddBookOperation : TxOperation
     {
         private readonly BooksNoSqlDbContext _db;
         private readonly Book _book;
@@ -13,37 +13,14 @@ namespace NetTransactionScope.Library.Mongodb
         {
             _db = db;
             _book = book;
-            Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
         }
 
-        public void Prepare(PreparingEnlistment preparingEnlistment)
+        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            try
-            {
-                _db.Books.InsertOne(_book);
-
-                //If work finished correctly, reply prepared
-                preparingEnlistment.Prepared();
-            }
-            catch
-            {
-                // otherwise, do a ForceRollback
-                preparingEnlistment.ForceRollback();
-            }
+            _db.Books.InsertOne(_book);
         }
 
-        public void Commit(Enlistment enlistment)
-        {
-            //Declare done on the enlistment
-            enlistment.Done();
-        }
-
-        public void InDoubt(Enlistment enlistment)
-        {
-            enlistment.Done();
-        }
-
-        public void Rollback(Enlistment enlistment)
+        public override void Rollback(Enlistment enlistment)
         {
             DeleteAddedItem();
             enlistment.Done();

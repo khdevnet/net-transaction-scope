@@ -21,41 +21,14 @@ namespace NetTransactionScope.Library.Files
             _fileStorage = fileStorage;
         }
 
-        public override void Prepare(PreparingEnlistment preparingEnlistment)
+        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            try
-            {
-
-                _fileStorage.CreateFile(CurrentPath, _fileData);
-
-                //If work finished correctly, reply prepared
-                preparingEnlistment.Prepared();
-            }
-            catch (IOException ex)
-            {
-                preparingEnlistment.ForceRollback();
-            }
-        }
-
-        public override void Commit(Enlistment enlistment)
-        {
-            enlistment.Done();
+            _fileStorage.CreateFile(CurrentPath, _fileData);
         }
 
         public override void Rollback(Enlistment enlistment)
         {
-            //Do any work necessary when rollback notification is received
-
             DeleteFile();
-
-            //Declare done on the enlistment
-            enlistment.Done();
-        }
-
-        public override void InDoubt(Enlistment enlistment)
-        {
-            //Do any work necessary when indout notification is received
-            //Declare done on the enlistment
             enlistment.Done();
         }
 

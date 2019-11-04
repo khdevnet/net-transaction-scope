@@ -4,7 +4,7 @@ using System.Transactions;
 
 namespace NetTransactionScope.Library.Files
 {
-    public abstract class FileOperation : IEnlistmentNotification
+    public abstract class FileOperation : TxOperation
     {
         protected readonly string BackupPath;
         protected readonly string CurrentPath;
@@ -14,8 +14,6 @@ namespace NetTransactionScope.Library.Files
         {
             BackupPath = GetTempFileName(Path.GetExtension(path));
             CurrentPath = path;
-            //Enlist on the current transaction with the enlistment object
-            Transaction.Current.EnlistVolatile(this, EnlistmentOptions.None);
         }
 
         protected static void EnsureTempFolderExists()
@@ -57,13 +55,5 @@ namespace NetTransactionScope.Library.Files
 
             return retVal;
         }
-
-        public abstract void Commit(Enlistment enlistment);
-
-        public abstract void InDoubt(Enlistment enlistment);
-
-        public abstract void Prepare(PreparingEnlistment preparingEnlistment);
-
-        public abstract void Rollback(Enlistment enlistment);
     }
 }

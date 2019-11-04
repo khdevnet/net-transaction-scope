@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.PostgreSql
@@ -7,7 +8,7 @@ namespace NetTransactionScope.Library.PostgreSql
     {
         DbSet<Book> Books { get; set; }
 
-        Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database { get; }
+        DatabaseFacade Database { get; }
 
         int SaveChanges();
     }

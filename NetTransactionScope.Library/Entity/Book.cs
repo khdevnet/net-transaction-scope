@@ -1,11 +1,9 @@
 ﻿using System;
-using MongoDB.Bson.Serialization.Attributes;
 
-namespace NetTransactionScope.Library.Mongodb
+namespace NetTransactionScope.Library.Entity
 {
     public class Book
     {
-        [BsonId]
         public Guid Id { get; set; }
 
         public string Title { get; set; }

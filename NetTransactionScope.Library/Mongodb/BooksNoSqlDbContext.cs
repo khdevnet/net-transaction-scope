@@ -1,5 +1,6 @@
 ﻿using System;
 using MongoDB.Driver;
+using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.Mongodb
 {
@@ -24,6 +25,7 @@ namespace NetTransactionScope.Library.Mongodb
         }
 
         public IMongoCollection<Book> Books => db.GetCollection<Book>(GetCollectionName<Book>());
+        public IMongoCollection<Book> BooksTemp => db.GetCollection<Book>(GetCollectionName<Book>()+"_temp");
 
         public void DropCollection<T>()
         {

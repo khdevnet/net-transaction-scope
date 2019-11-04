@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using System.Transactions;
-using NetTransactionScope.Library;
+using NetTransactionScope.Library.Files;
 using Xunit;
 
-namespace NetTransactionScope.Tests
+namespace NetTransactionScope.Tests.Files
 {
-    public class DeleteFileOperationTests
+    public class DeleteFileOperationTests: TestsBase
     {
         [Fact]
         public void CompleteTransactionFileDeletedTest()
@@ -62,14 +62,6 @@ namespace NetTransactionScope.Tests
 
             Assert.True(File.Exists(testFilePath));
             File.Delete(testFilePath);
-        }
-
-        private static string CreateTestFile(string name)
-        {
-            var applicationBasePath = AppContext.BaseDirectory;
-            var testFilePath = Path.Combine(applicationBasePath, name);
-            File.AppendAllText(testFilePath, "hello");
-            return testFilePath;
         }
     }
 }

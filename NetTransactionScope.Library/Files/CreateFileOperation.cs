@@ -3,11 +3,14 @@ using System.Transactions;
 
 namespace NetTransactionScope.Library.Files
 {
-    public class DeleteFileOperation : FileOperation
+    public class CreateFileOperation : FileOperation
     {
-        public DeleteFileOperation(string path)
+        private readonly byte[] _fileData;
+
+        public CreateFileOperation(string path, byte[] fileData)
         : base(path)
         {
+            _fileData = fileData;
         }
 
         public override void Prepare(PreparingEnlistment preparingEnlistment)
@@ -31,7 +34,7 @@ namespace NetTransactionScope.Library.Files
         public override void Commit(Enlistment enlistment)
         {
             //Do any work necessary when commit notification is received
-            DeleteFile();
+            CreateFile();
             DeleteBackupFile();
             //Declare done on the enlistment
             enlistment.Done();
@@ -41,7 +44,7 @@ namespace NetTransactionScope.Library.Files
         {
             //Do any work necessary when rollback notification is received
 
-            RestoreFile();
+            DeleteFile();
             DeleteBackupFile();
 
             //Declare done on the enlistment
@@ -57,9 +60,22 @@ namespace NetTransactionScope.Library.Files
 
         private void BackupFile()
         {
+            File.WriteAllBytes(BackupPath, _fileData);
+        }
+
+        private void CreateFile()
+        {
+            if (!File.Exists(CurrentPath))
+            {
+                File.WriteAllBytes(CurrentPath, _fileData);
+            }
+        }
+
+        private void DeleteFile()
+        {
             if (File.Exists(CurrentPath))
             {
-                File.Copy(CurrentPath, BackupPath);
+                File.Delete(CurrentPath);
             }
         }
     }

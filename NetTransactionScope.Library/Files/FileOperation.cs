@@ -2,12 +2,12 @@
 using System.IO;
 using System.Transactions;
 
-namespace NetTransactionScope.Library
+namespace NetTransactionScope.Library.Files
 {
     public abstract class FileOperation : IEnlistmentNotification
     {
-        private readonly string BackupPath;
-        private readonly string CurrentPath;
+        protected readonly string BackupPath;
+        protected readonly string CurrentPath;
         private static readonly string TempFolder = Path.Combine(Path.GetTempPath(), "txOperations");
 
         protected FileOperation(string path)
@@ -23,14 +23,6 @@ namespace NetTransactionScope.Library
             if (!Directory.Exists(TempFolder))
             {
                 Directory.CreateDirectory(TempFolder);
-            }
-        }
-
-        protected void BackupFile()
-        {
-            if (File.Exists(CurrentPath))
-            {
-                File.Copy(CurrentPath, BackupPath);
             }
         }
 

@@ -16,7 +16,7 @@ namespace NetTransactionScope.Library.PostgreSql
             _book = book;
         }
 
-        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
+        protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
             _transaction = _db.Database.BeginTransaction();
             _db.Books.Add(_book);

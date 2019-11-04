@@ -15,7 +15,7 @@ namespace NetTransactionScope.Library.Mongodb
             _book = book;
         }
 
-        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
+        protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
             _db.Books.InsertOne(_book);
         }

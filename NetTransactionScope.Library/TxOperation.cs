@@ -31,7 +31,7 @@ namespace NetTransactionScope.Library
             enlistment.Done();
         }
 
-        public abstract void PrepareInternal(PreparingEnlistment preparingEnlistment);
+        protected abstract void PrepareInternal(PreparingEnlistment preparingEnlistment);
 
         public void Prepare(PreparingEnlistment preparingEnlistment)
         {

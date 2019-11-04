@@ -10,7 +10,7 @@ namespace NetTransactionScope.Library.Files
         {
         }
 
-        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
+        protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
             EnsureTempFolderExists();
             BackupFile();

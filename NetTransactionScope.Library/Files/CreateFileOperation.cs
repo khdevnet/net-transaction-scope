@@ -21,7 +21,7 @@ namespace NetTransactionScope.Library.Files
             _fileStorage = fileStorage;
         }
 
-        public override void PrepareInternal(PreparingEnlistment preparingEnlistment)
+        protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
             _fileStorage.CreateFile(CurrentPath, _fileData);
         }

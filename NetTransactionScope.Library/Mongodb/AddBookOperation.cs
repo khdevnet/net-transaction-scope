@@ -24,6 +24,7 @@ namespace NetTransactionScope.Library.Mongodb
 
                 EnsureTempCollectionExists();
                 BackupData();
+                _db.Books.InsertOne(_book);
 
                 //If work finished correctly, reply prepared
                 preparingEnlistment.Prepared();
@@ -37,7 +38,6 @@ namespace NetTransactionScope.Library.Mongodb
 
         public void Commit(Enlistment enlistment)
         {
-            _db.Books.InsertOne(_book);
             DeleteBackupItem();
             //Declare done on the enlistment
             enlistment.Done();

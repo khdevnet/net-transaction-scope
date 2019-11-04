@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using NetTransactionScope.Library.Entity;
 using NetTransactionScope.Library.Files;
@@ -55,23 +56,51 @@ namespace NetTransactionScope.Tests.SeveralSourcesTransaction
                 .When(x => x.CreateFile(Arg.Any<string>(), Arg.Any<byte[]>()))
                 .Do(x => throw new IOException());
 
-            using (TransactionScope scope = new TransactionScope())
+            Assert.Throws<TransactionAbortedException>(() =>
             {
-                CreateBookSql(book);
-                CreateBookNoSql(book);
-                new CreateFileOperation(destFilePath, sourceFile, fileStorage);
-                scope.Complete();
-            }
-
-            //Assert.Throws<IOException>(() =>
-            //{
-
-
-            //});
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    CreateBookSql(book);
+                    CreateBookNoSql(book);
+                    new CreateFileOperation(destFilePath, sourceFile, fileStorage);
+                    scope.Complete();
+                }
+            });
 
             AssertNoSqlBookNotAdded(bookId);
             AssertSqlBookNotAdded(bookId);
             AssertBookFileNotAdded();
+        }
+
+        [Fact]
+        public void AddBookInSingleTransactionAddSqlBookFailedTest()
+        {
+            var bookId = Guid.NewGuid();
+            Book book = CreateBookEntity(bookId);
+
+            var dbContext = Substitute.For<IBooksSqlDbContext>();
+            var dbSetBook = Substitute.For<DbSet<Book>>();
+            dbSetBook
+                .When(x => x.Add(Arg.Any<Book>()))
+                .Do(x => throw new DbUpdateException("", new Exception()));
+            dbContext.Books.Returns(dbSetBook);
+
+            Assert.Throws<TransactionAbortedException>(() =>
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    CreateBookNoSql(book);
+                    CreateBookFile();
+                    new AddBookPostgreSqlDbOperation(dbContext, book);
+
+                    scope.Complete();
+                }
+            });
+
+            AssertNoSqlBookNotAdded(bookId);
+            AssertSqlBookNotAdded(bookId);
+            AssertBookFileNotAdded();
+
         }
 
         private void CreateBookFile()

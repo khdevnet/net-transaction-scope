@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFramework.Exceptions.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
 using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.PostgreSql
 {
-    public class BooksSqlDbContext : DbContext
+    public class BooksSqlDbContext : DbContext, IBooksSqlDbContext
     {
         public const string ConnectionStringTemplate = @"Host={0};Port={1};Database={2};Username={3};Password={4};";// Enlist=true
         public const string Password = "123456";
@@ -14,9 +15,10 @@ namespace NetTransactionScope.Library.PostgreSql
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(string.Format(ConnectionStringTemplate, Host, Port, "book_library", User, Password));
+            optionsBuilder.UseExceptionProcessor();
         }
 
-        public DbSet<Book> Books { get; set; }
+        public virtual DbSet<Book> Books { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

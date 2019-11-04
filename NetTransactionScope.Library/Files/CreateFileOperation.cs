@@ -23,26 +23,25 @@ namespace NetTransactionScope.Library.Files
 
         public override void Prepare(PreparingEnlistment preparingEnlistment)
         {
-            //try
-            //{
+            try
+            {
 
-            EnsureTempFolderExists();
-            BackupFile();
+                EnsureTempFolderExists();
+                BackupFile();
+                _fileStorage.CreateFile(CurrentPath, _fileData);
 
-            // If work finished correctly, reply prepared
-            preparingEnlistment.Prepared();
-            //}
-            //catch (IOException ex)
-            //{
-            //    // otherwise, do a ForceRollback
-            //    preparingEnlistment.ForceRollback();
-            //}
+                //If work finished correctly, reply prepared
+                preparingEnlistment.Prepared();
+            }
+            catch (IOException ex)
+            {
+                preparingEnlistment.ForceRollback();
+            }
         }
 
         public override void Commit(Enlistment enlistment)
         {
             //Do any work necessary when commit notification is received
-            _fileStorage.CreateFile(CurrentPath, _fileData);
             DeleteBackupFile();
             //Declare done on the enlistment
             enlistment.Done();

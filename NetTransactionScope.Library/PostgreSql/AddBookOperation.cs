@@ -7,11 +7,11 @@ namespace NetTransactionScope.Library.PostgreSql
 {
     public class AddBookOperation : IEnlistmentNotification
     {
-        private readonly BooksSqlDbContext _db;
+        private readonly IBooksSqlDbContext _db;
         private IDbContextTransaction _transaction;
         private readonly Book _book;
 
-        public AddBookOperation(BooksSqlDbContext db, Book book)
+        public AddBookOperation(IBooksSqlDbContext db, Book book)
         {
             _db = db;
             _book = book;
@@ -23,6 +23,8 @@ namespace NetTransactionScope.Library.PostgreSql
             try
             {
                 _transaction = _db.Database.BeginTransaction();
+                _db.Books.Add(_book);
+                _db.SaveChanges();
                 preparingEnlistment.Prepared();
             }
             catch (Exception e)
@@ -33,8 +35,6 @@ namespace NetTransactionScope.Library.PostgreSql
 
         public void Commit(Enlistment enlistment)
         {
-            _db.Books.Add(_book);
-            _db.SaveChanges();
             _transaction.Commit();
             _transaction.Dispose();
             enlistment.Done();

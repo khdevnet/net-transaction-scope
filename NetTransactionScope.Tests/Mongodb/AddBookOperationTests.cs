@@ -9,6 +9,7 @@ namespace NetTransactionScope.Tests.Mongodb
 {
     public class AddBookOperationTests : IClassFixture<MongoDbClassFixture>
     {
+
         [Fact]
         public void AddBookOperationBookAdded()
         {

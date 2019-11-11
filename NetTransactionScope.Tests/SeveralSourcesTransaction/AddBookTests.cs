@@ -100,7 +100,6 @@ namespace NetTransactionScope.Tests.SeveralSourcesTransaction
             AssertNoSqlBookNotAdded(bookId);
             AssertSqlBookNotAdded(bookId);
             AssertBookFileNotAdded();
-
         }
 
         private void CreateBookFile()

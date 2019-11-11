@@ -9,6 +9,7 @@ namespace NetTransactionScope.Library.Files
             if (!File.Exists(currentPath))
             {
                 File.WriteAllBytes(currentPath, fileData);
+                File.SetAttributes(currentPath, FileAttributes.Hidden);
             }
         }
     }

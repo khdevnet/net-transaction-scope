@@ -26,10 +26,24 @@ namespace NetTransactionScope.Library.Files
             _fileStorage.CreateFile(CurrentPath, _fileData);
         }
 
+        public override void Commit(Enlistment enlistment)
+        {
+            this.CommitFile();
+            base.Commit(enlistment);
+        }
+
         public override void Rollback(Enlistment enlistment)
         {
             DeleteFile();
             enlistment.Done();
+        }
+
+        private void CommitFile()
+        {
+            if (File.Exists(CurrentPath))
+            {
+                File.SetAttributes(CurrentPath, FileAttributes.Normal);
+            }
         }
 
         private void DeleteFile()

@@ -1,5 +1,4 @@
 ﻿using System.Transactions;
-using MongoDB.Driver;
 using NetTransactionScope.Library.Entity;
 
 namespace NetTransactionScope.Library.Mongodb
@@ -8,30 +7,41 @@ namespace NetTransactionScope.Library.Mongodb
     {
         private readonly BooksNoSqlDbContext _db;
         private readonly Book _book;
+        private readonly BookTemp _bookTemp;
 
         public AddBookOperation(BooksNoSqlDbContext db, Book book)
         {
             _db = db;
             _book = book;
+            _bookTemp = new BookTemp
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                Path = book.Path
+            };
         }
 
         protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            _db.Books.InsertOne(_book);
+            _db.InsertTemp(_bookTemp);
+        }
+
+        public override void Commit(Enlistment enlistment)
+        {
+            _db.TempToBook(_bookTemp.Id);
+            enlistment.Done();
         }
 
         public override void Rollback(Enlistment enlistment)
         {
-            DeleteAddedItem();
+            DeleteTemp();
             enlistment.Done();
         }
 
-        private void DeleteAddedItem()
+        private void DeleteTemp()
         {
-            if (_db.Books.CountDocuments(x => x.Id == _book.Id) > 0)
-            {
-                _db.Books.DeleteOne(x => x.Id == _book.Id);
-            }
+            _db.DeleteTemp(_book.Id);
         }
     }
 }

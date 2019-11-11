@@ -1,57 +1,80 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Transactions;
 
 namespace NetTransactionScope.Library.Files
 {
-    public class CreateFileOperation : FileOperation
+    public class CreateFileOperation : TxOperation
     {
         private readonly byte[] _fileData;
         private readonly FileStorage _fileStorage;
+        private readonly string BackupPath;
+        private readonly string DestFolderPath;
+        private readonly string CurrentPath;
 
         public CreateFileOperation(string path, byte[] fileData)
         : this(path, fileData, new FileStorage())
         {
-            _fileData = fileData;
         }
 
         public CreateFileOperation(string path, byte[] fileData, FileStorage fileStorage)
-            : base(path)
         {
+            CurrentPath = path;
             _fileData = fileData;
             _fileStorage = fileStorage;
+            DestFolderPath = Path.GetDirectoryName(CurrentPath);
+            BackupPath = GetTempFileName();
         }
 
         protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            _fileStorage.CreateFile(CurrentPath, _fileData);
+            if (File.Exists(CurrentPath))
+            {
+                throw new Exception("File exist.");
+            }
+
+            _fileStorage.CreateFile(BackupPath, _fileData);
+            File.SetAttributes(BackupPath, FileAttributes.Hidden);
         }
 
         public override void Commit(Enlistment enlistment)
         {
-            this.CommitFile();
-            base.Commit(enlistment);
+            CommitFile();
+            enlistment.Done();
         }
 
         public override void Rollback(Enlistment enlistment)
         {
-            DeleteFile();
+            DeleteBackupFile();
             enlistment.Done();
         }
 
         private void CommitFile()
         {
-            if (File.Exists(CurrentPath))
+            if (File.Exists(BackupPath) && !File.Exists(CurrentPath))
             {
-                File.SetAttributes(CurrentPath, FileAttributes.Normal);
+                File.SetAttributes(BackupPath, FileAttributes.Normal);
+                RenameFile();
             }
         }
 
-        private void DeleteFile()
+        private void DeleteBackupFile()
         {
-            if (File.Exists(CurrentPath))
+            if (File.Exists(BackupPath))
             {
-                File.Delete(CurrentPath);
+                File.Delete(BackupPath);
             }
+        }
+
+        private string GetTempFileName()
+        {
+            string tempName = Guid.NewGuid().ToString();
+            return Path.Combine(DestFolderPath, tempName) + ".tmp";
+        }
+
+        private void RenameFile()
+        {
+            File.Move(BackupPath, CurrentPath);
         }
     }
 }

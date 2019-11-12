@@ -13,7 +13,7 @@ namespace NetTransactionScope.Tests
             RunCommand("docker stop postgresql-tests");
             RunCommand("docker rm postgresql-tests");
             RunCommand($"docker run --name postgresql-tests -p {BooksSqlDbContext.Port}:5432 -e POSTGRES_PASSWORD={BooksSqlDbContext.Password} -d postgres:9.6.2");
-            Thread.Sleep(3000);
+            Thread.Sleep(5000);
             InitSqlDbContext();
         }
 

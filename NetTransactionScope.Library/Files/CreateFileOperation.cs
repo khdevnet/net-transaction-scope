@@ -28,7 +28,7 @@ namespace NetTransactionScope.Library.Files
 
         protected override void PrepareInternal(PreparingEnlistment preparingEnlistment)
         {
-            if (File.Exists(CurrentPath))
+            if (_fileStorage.Exists(CurrentPath))
             {
                 throw new Exception("File exist.");
             }
@@ -51,7 +51,7 @@ namespace NetTransactionScope.Library.Files
 
         private void CommitFile()
         {
-            if (File.Exists(BackupPath) && !File.Exists(CurrentPath))
+            if (_fileStorage.Exists(BackupPath) && !File.Exists(CurrentPath))
             {
                 File.SetAttributes(BackupPath, FileAttributes.Normal);
                 RenameFile();
@@ -60,9 +60,9 @@ namespace NetTransactionScope.Library.Files
 
         private void DeleteBackupFile()
         {
-            if (File.Exists(BackupPath))
+            if (_fileStorage.Exists(BackupPath))
             {
-                File.Delete(BackupPath);
+                _fileStorage.Delete(BackupPath);
             }
         }
 
@@ -74,7 +74,7 @@ namespace NetTransactionScope.Library.Files
 
         private void RenameFile()
         {
-            File.Move(BackupPath, CurrentPath);
+            _fileStorage.Move(BackupPath, CurrentPath);
         }
     }
 }

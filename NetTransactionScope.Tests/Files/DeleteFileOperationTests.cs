@@ -63,5 +63,13 @@ namespace NetTransactionScope.Tests.Files
             Assert.True(File.Exists(testFilePath));
             File.Delete(testFilePath);
         }
+
+        private static string CreateTestFile(string name)
+        {
+            var applicationBasePath = GetRootPath();
+            var testFilePath = Path.Combine(applicationBasePath, name);
+            File.AppendAllText(testFilePath, "hello");
+            return testFilePath;
+        }
     }
 }
